@@ -29,7 +29,7 @@ const SearchSection = () => {
       options: ["suv", "sedan", "crossover", "jeep", "sports"],
     },
   ];
-  console.log(menus);
+  // console.log(menus);
   return (
     <div className="p-10 border-2 border-gray-200">
       <h1 className="text-start font-bold">Search</h1>

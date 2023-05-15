@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
+import "./Nav.css";
 import {
   Navbar,
   MobileNav,
@@ -6,15 +7,22 @@ import {
   Button,
   IconButton,
   Collapse,
+  Avatar,
+  ListItem,
+  List,
+  Tooltip,
 } from "@material-tailwind/react";
 import logo from "../../../Assets/Logo/logo.png";
 import PrimaryButton from "../../../Components/PrimaryButton/PrimaryButton";
-import { NavLink } from "react-router-dom";
-// import "./Nav.css";
+import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../../Context/AuthProvider";
+import userImg from "../../../Assets/sticker/user.png";
 
 const Nav = () => {
   const [openNav, setOpenNav] = useState(false);
-
+  const { user } = useContext(AuthContext);
+  // console.log(user);
+  const imgUrl = user?.photoURL === "null" ? user.photoURL : userImg;
   useEffect(() => {
     window.addEventListener(
       "resize",
@@ -32,133 +40,65 @@ const Nav = () => {
         // console.log(menuRef.current);
       }
     };
-
     document.addEventListener("mousedown", handler);
-
     return () => {
       document.removeEventListener("mousedown", handler);
     };
   });
-  const navList = [
-    { name: "Home", link: "/", icon: "stats-chart-outline" },
-    {
-      name: "Dashboard",
-      link: "/",
-      icon: "bag-handle-outline",
-    },
-    {
-      name: "Inbox",
-      link: "/",
-      icon: "chatbox-ellipses-outline",
-    },
-    {
-      name: "Profile",
-      link: "/",
-      icon: "person-circle-outline",
-      margin: true,
-    },
-    { name: "Setting", link: "/", icon: "settings-outline" },
-    { name: "Log Out", link: "/", icon: "log-out-outline" },
-  ];
 
-  const navitem = (
-    <>
-      {navList.map((navitem, i) => (
-        <NavLink key={i} className="m-2 ">
-          {navitem.name}
-        </NavLink>
-      ))}
-    </>
+  const navList = (
+    <ul className="mb-4 mt-4 flex flex-col gap-4 lg:mb-0 lg:mt-0 lg:flex-row items-start lg:items-center">
+      <NavLink
+        to="/"
+        className="text-gray-800 font-semibold duration-500 cursor-pointer p-1"
+      >
+        Home
+      </NavLink>
+
+      <NavLink
+        to="/about"
+        className="text-gray-800 font-semibold  duration-500 cursor-pointer p-1"
+      >
+        About
+      </NavLink>
+      <NavLink
+        to="/blog"
+        className="text-gray-800 font-semibold  duration-500 cursor-pointer p-1"
+      >
+        Blog
+      </NavLink>
+    </ul>
   );
-
-  //   const navList = (
-  //     <ul className="mb-4 mt-4 flex flex-col gap-4 lg:mb-0 lg:mt-0 lg:flex-row items-start lg:items-center">
-  //       <NavLink
-  //         to="home"
-  //         spy={true}
-  //         smooth={true}
-  //         activeClass="active"
-  //         offset={-70}
-  //         duration={500}
-  //         className="text-gray-800 hover:text-blue-500 font-semibold duration-500 cursor-pointer p-1"
-  //       >
-  //         Home
-  //       </Link>
-
-  //       <Link
-  //         to="feature"
-  //         spy={true}
-  //         activeClass="active"
-  //         smooth={true}
-  //         offset={-50}
-  //         duration={500}
-  //         className="text-gray-800 hover:text-blue-500 font-semibold  duration-500 cursor-pointer p-1"
-  //       >
-  //         Feature
-  //       </Link>
-
-  //       <Link
-  //         to="how_its_work"
-  //         spy={true}
-  //         activeClass="active"
-  //         smooth={true}
-  //         offset={-50}
-  //         duration={500}
-  //         className="text-gray-800 hover:text-blue-500 font-semibold duration-500 cursor-pointer p-1"
-  //       >
-  //         How it's work
-  //       </Link>
-
-  //       <Link
-  //         to="why_this_app"
-  //         spy={true}
-  //         smooth={true}
-  //         activeClass="active"
-  //         offset={-50}
-  //         duration={500}
-  //         className="text-gray-800  hover:text-blue-500 font-semibold duration-500 cursor-pointer p-1"
-  //       >
-  //         Why this app
-  //       </Link>
-
-  //       <Link
-  //         to="review"
-  //         spy={true}
-  //         smooth={true}
-  //         activeClass="active"
-  //         offset={-50}
-  //         duration={500}
-  //         className="text-gray-800  hover:text-blue-500 font-semibold duration-500 cursor-pointer p-1"
-  //       >
-  //         Review's
-  //       </Link>
-
-  //       <Link
-  //         to="faq"
-  //         spy={true}
-  //         activeClass="active"
-  //         smooth={true}
-  //         offset={-50}
-  //         duration={500}
-  //         className="text-gray-800 hover:text-blue-500 font-semibold duration-500 cursor-pointer p-1"
-  //       >
-  //         FAQ
-  //       </Link>
-  //     </ul>
-  //   );
 
   return (
     <Navbar
-      className="sticky inset-0 z-10 h-max max-w-full bg-primary rounded-none border-none"
+      className="sticky inset-0 z-10 h-max max-w-full bg-white rounded-none shadow-none border-none px-4 py-2"
       ref={menuRef}
     >
       <div className="flex items-center justify-between text-blue-gray-900">
         <img className="w-36" src={logo} alt="..." />
         <div className="flex items-center gap-2">
-          <div className="mr-4 hidden lg:block">{navitem}</div>
-          <PrimaryButton className="rounded-md text-sm hidden lg:inline-block">
-            Login
-          </PrimaryButton>
+          <div className="mr-4 hidden lg:block">{navList}</div>
+          <icon>
+            <ion-icon name="accessibility-outline" />
+          </icon>
+          {user?.uid ? (
+            <>
+              <Link to="/dashboard/">
+                <Tooltip content="Dashboard">
+                  <Avatar src={imgUrl} alt="avatar" />
+                </Tooltip>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <PrimaryButton className="rounded-md text-sm hidden lg:inline-block">
+                  Login
+                </PrimaryButton>
+              </Link>
+            </>
+          )}
 
           <IconButton
             variant="text"
@@ -200,13 +140,10 @@ const Nav = () => {
         </div>
       </div>
       <Collapse className="flex flex-col text-black text-start" open={openNav}>
-        {navitem}
+        {navList}
         <PrimaryButton variant="gradient" fullWidth className="rounded-full ">
           Login
         </PrimaryButton>
-        {/* <Button variant="gradient" size="sm" className="mb-2">
-            <span>Buy Now</span>
-          </Button> */}
       </Collapse>
     </Navbar>
   );
